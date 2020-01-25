@@ -3,7 +3,7 @@ new Vue({
     data: {
       point: 'http://www.filltext.com/?rows=1000&id=%7Bnumber%7C1000%7D&firstName=%7BfirstName%7D&delay=3&lastName=%7BlastName%7D&email=%7Bemail%7D&phone=%7Bphone%7C(xxx)xxx-xx-xx%7D&address=%7BaddressObject%7D&description=%7Blorem%7C32%7D',
       elements:[],
-      newArray:[],
+      filterEl:[],
       add: {
         id: '',
         firstName: '',
@@ -45,25 +45,27 @@ new Vue({
     computed: {
       collection() {
         if (!this.search) {
-          this.newArray = this.elements
+          this.filterEl = this.elements
         } 
-        return this.paginate(this.newArray)
+        return this.paginate(this.filterEl)
       }
     },
     methods: {
       filtered(search) {   
         var row = this.elements
-        this.newArray = []
+        this.filterEl = []
         for (var key in row) {
           for (var key2 in row[key]) {
             if (String(row[key][key2]).toLowerCase().indexOf(String(search).toLowerCase()) !== -1) {
-              this.newArray.push(row[key])
+              this.filterEl.push(row[key])
             } 
           }
         } 
+        this.setPage(1)
       },
       onSubmit() {
         this.elements.unshift(this.add)
+        this.filterEl.unshift(this.add)
       },
       getAllElements() {
         if (this.flag) {
@@ -76,7 +78,10 @@ new Vue({
         }
       },
       setPage(p) {
-        this.pagination = this.paginator(this.elements.length, p)
+        if (!this.search) {
+          this.filterEl = this.elements
+        } 
+        this.pagination = this.paginator(this.filterEl.length, p)
       },
       paginate(elements) {
         return _.slice(elements, this.pagination.startIndex, this.pagination.endIndex + 1)
@@ -105,6 +110,7 @@ new Vue({
             this.query.direction = 'asc'
         }
         this.elements = this.sortArrays(this.elements, column)
+        this.filterEl = this.sortArrays(this.filterEl, column)
       },
       sortArrays(elements, column) {
         return _.orderBy(elements, column, this.query.direction);
