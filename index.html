@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Future</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+      <div class="preloader" :class="{'d-none': !loading}">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
+      <div class="container mt-3" :class="{'d-none': loading}">
+        <input class="px-1" type="text" placeholder="Фильтровать" v-model="search">
+        <button 
+          @click="filtered(search)" 
+        >
+          Найти
+        </button>
+        <form 
+          class="my-1"
+          @submit.prevent="onSubmit" 
+          :class="{'d-none': !isActive}"
+        >
+          <input class="my-1 p-1" type="text" placeholder="id" v-model="add.id">
+          <input class="my-1 p-1" type="text" placeholder="firstName" v-model="add.firstName">
+          <input class="my-1 p-1" type="text" placeholder="lastName" v-model="add.lastName">
+          <input class="my-1 p-1" type="text" placeholder="email" v-model="add.email">
+          <input class="my-1 p-1" type="text" placeholder="phone" v-model="add.phone">
+          <input class="my-1 p-1" type="text" placeholder="streetAddress" v-model="add.address.streetAddress">
+          <input class="my-1 p-1" type="text" placeholder="city" v-model="add.address.city">
+          <input class="my-1 p-1" type="text" placeholder="state" v-model="add.address.state">
+          <input class="my-1 p-1" type="text" placeholder="zip" v-model="add.address.zip">
+          <input class="my-1 p-1" type="text" placeholder="description" v-model="add.description">
+          <button class="my-1 p-1" type="submit" @click="isActive = !isActive">Добавить</button>
+        </form>
+        <button 
+          class="float-right"
+          @click="isActive = !isActive" 
+          :class="{'d-none': isActive}"
+        >
+          Добавить Элемент
+        </button>
+        <table class="table my-2">
+          <thead class="thead-light">
+            <tr>
+              <th v-for="column in columns" @click="toggleOrder(column)">
+                <span>{{ column }}</span>
+                <span v-if="query.column === column">
+                    <span v-if="query.direction === 'desc'">&darr;</span>
+                    <span v-else>&uarr;</span>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="element in collection" @click="showDetail(element)">
+              <th scope="row">{{ element.id }}</th>
+              <td>{{ element.firstName }}</td>
+              <td>{{ element.lastName }}</td>
+              <td>{{ element.email }}</td>
+              <td>{{ element.phone }}</td>
+            </tr>
+          </tbody>
+        </table>     
+        <div class="alert alert-primary mt-2" role="alert" :class="{'d-none': !showBlock}">
+          Выбран пользователь <b>{{ show.firstName }} {{ show.lastName }}Corson</b> <br>
+          Описание: <br>
+          <textarea class="w-100 py-4">
+            {{ show.description }}
+          </textarea>
+          Адрес проживания: <b>{{ show.address.streetAddress }}</b><br>
+          Город: <b>{{ show.address.city }}</b><br>
+          Провинция/штат: <b>{{ show.address.state }}</b><br>
+          Индекс: <b>{{ show.address.zip }}</b><br>
+        </div>
+        <div class="btn-toolbar">
+            <div class="btn-group mx-auto">
+                <button class="btn btn-primary" 
+                    v-for="p in pagination.pages" 
+                    @click.prevent="setPage(p)"
+                >
+                {{ p }}
+                </button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
